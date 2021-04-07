@@ -4,6 +4,7 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ResponseBody
+import org.springframework.web.util.UriComponentsBuilder
 
 @Controller
 class LoginController {
@@ -21,9 +22,22 @@ class LoginController {
 
     @GetMapping("/signin", produces = [MediaType.TEXT_HTML_VALUE])
     @ResponseBody
-    fun signin(): String = """
-        <p>You are already signed in as username</p>
-        <a href="/home">Home</a>
-        <a href="/oauth2">Sign In using Google Account</p>
-    """.trimIndent()
+    fun signin(): String {
+        val googleSignInUrl = UriComponentsBuilder.fromPath("https://accounts.google.com/o/oauth2/auth")
+            .queryParam("client_id", clientId)
+            .queryParam("redirect_uri", "http://localhost:8080/oauthcallback")
+            .queryParam("response_type", "code")
+            .queryParam("access_type", "offline")
+            .queryParam("scope", "https://www.googleapis.com/auth/userinfo.profile")
+            .queryParam("state", "")
+            .build()
+            .encode()
+            .toUriString()
+
+        return """
+            <p>You are already signed in as username</p>
+            <a href="/home">Home</a>
+            <a href="$googleSignInUrl">Sign In using Google Account</p>
+        """.trimIndent()
+    }
 }
