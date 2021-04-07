@@ -36,8 +36,13 @@ class LoginController(
         return """
             <p>You are already signed in as $userName</p>
             <a href="/home">Home</a>
-            <a href="${loginService.getLoginRedirect(session.id)}">Sign In using Google Account</p>
+            <a href="/googlesignin">Sign In using Google Account</p>
         """.trimIndent()
+    }
+
+    @GetMapping("/googlesignin")
+    fun googleSignIn(session: HttpSession): RedirectView {
+        return RedirectView(loginService.getLoginRedirect(session.id))
     }
 
     @GetMapping("/oauthcallback")
