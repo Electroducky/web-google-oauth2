@@ -1,0 +1,19 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Sign in</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style>
+        .container {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <p th:text="'You are already signed in as ' + ${username}" th:if="${signedIn}"></p>
+    <button onclick="window.location.href='/googlesignin'" th:unless="${signedIn}">Sign In using Google Account</button>
+    <button onclick="window.location.href='/home'" th:if="${signedIn}">Home</button>
+</div>
+</body>
+</html>

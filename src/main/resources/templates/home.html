@@ -1,0 +1,19 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Home</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style>
+        .container {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <p th:text="'Welcome ' + (${username} ?: 'new user') + '! This is a home page'"></p>
+    <button onclick="window.location.href='/signin'" th:unless="${signedIn}">Sign in</button>
+    <button onclick="window.location.href='/signout'" th:if="${signedIn}">Sign Out</button>
+</div>
+</body>
+</html>

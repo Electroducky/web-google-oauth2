@@ -1,10 +1,9 @@
 package com.electroducky.webgoogleoauth2
 
-import org.springframework.http.MediaType
 import org.springframework.stereotype.Controller
+import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.servlet.view.RedirectView
 import javax.servlet.http.HttpSession
 
@@ -16,28 +15,24 @@ class LoginController(
         println("http://localhost:8080/home")
     }
 
-    @GetMapping("/home", produces = [MediaType.TEXT_HTML_VALUE])
-    @ResponseBody
-    fun home(session: HttpSession): String {
+    @GetMapping("/home")
+    fun home(session: HttpSession, model: Model): String {
         val authSession = session.getAttribute(authSessionKey) as AuthSession?
-        val userName = authSession?.let { loginService.getName(it) } ?: "new user"
-        return """
-            <p>Welcome $userName! This is a home page</p>
-            <a href="/signin">Sign in</a>
-            <a href="/signout">Sign out</p>
-        """.trimIndent()
+
+        model.addAttribute("username", loginService.getName(authSession))
+        model.addAttribute("signedIn", authSession != null)
+
+        return "home"
     }
 
-    @GetMapping("/signin", produces = [MediaType.TEXT_HTML_VALUE])
-    @ResponseBody
-    fun signin(session: HttpSession): String {
+    @GetMapping("/signin")
+    fun signin(session: HttpSession, model: Model): String {
         val authSession = session.getAttribute(authSessionKey) as AuthSession?
-        val userName = authSession?.let { loginService.getName(it) } ?: "new user"
-        return """
-            <p>You are already signed in as $userName</p>
-            <a href="/home">Home</a>
-            <a href="/googlesignin">Sign In using Google Account</p>
-        """.trimIndent()
+
+        model.addAttribute("username", loginService.getName(authSession))
+        model.addAttribute("signedIn", authSession != null)
+
+        return "signin"
     }
 
     @GetMapping("/googlesignin")

@@ -50,7 +50,9 @@ class LoginService {
         )
     }
 
-    fun getName(authSession: AuthSession): String {
+    fun getName(authSession: AuthSession?): String? {
+        authSession ?: return null
+
         val person = webClient.get()
             .uri("https://people.googleapis.com/v1/people/me?personFields=names")
             .header("Authorization", "Bearer ${authSession.accessToken}")
