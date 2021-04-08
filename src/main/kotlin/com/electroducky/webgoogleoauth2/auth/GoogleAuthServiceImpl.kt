@@ -1,7 +1,8 @@
-package com.electroducky.webgoogleoauth2
+package com.electroducky.webgoogleoauth2.auth
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.electroducky.webgoogleoauth2.auth.client.GoogleTokenExchangeResult
+import com.electroducky.webgoogleoauth2.clientId
+import com.electroducky.webgoogleoauth2.clientSecret
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.BodyInserters
@@ -10,10 +11,10 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.time.Instant
 
 @Service
-class LoginService {
+class GoogleAuthServiceImpl : GoogleAuthService {
     private val webClient = WebClient.create()
 
-    fun getLoginRedirect(sessionId: String): String {
+    override fun beginAuthUrl(sessionId: String): String {
         return UriComponentsBuilder.fromPath("https://accounts.google.com/o/oauth2/auth")
             .queryParam("client_id", clientId)
             .queryParam("redirect_uri", "http://localhost:8080/oauthcallback")
@@ -26,7 +27,7 @@ class LoginService {
             .toUriString()
     }
 
-    fun finishAuth(sessionId: String, state: String, code: String): AuthSession {
+    override fun finishAuth(sessionId: String, state: String, code: String): AuthSession {
         check(sessionId == state) { "Broken state please try again" }
 
         val tokens = webClient.post()
@@ -40,7 +41,7 @@ class LoginService {
                     .with("redirect_uri", "http://localhost:8080/oauthcallback")
             )
             .retrieve()
-            .bodyToMono(Tokens::class.java)
+            .bodyToMono(GoogleTokenExchangeResult::class.java)
             .block()!!
 
         return AuthSession(
@@ -49,36 +50,4 @@ class LoginService {
             tokens.refreshToken
         )
     }
-
-    fun getName(authSession: AuthSession?): String? {
-        authSession ?: return null
-
-        val person = webClient.get()
-            .uri("https://people.googleapis.com/v1/people/me?personFields=names")
-            .header("Authorization", "Bearer ${authSession.accessToken}")
-            .retrieve()
-            .bodyToMono(Person::class.java)
-            .block()!!
-
-        return person.names.first().displayName
-    }
 }
-
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class PersonName(val displayName: String)
-
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class Person(val names: List<PersonName>)
-
-data class Tokens(
-    @JsonProperty("access_token")
-    val accessToken: String,
-    @JsonProperty("expires_in")
-    val expiresIn: Int,
-    @JsonProperty("refresh_token")
-    val refreshToken: String,
-    @JsonProperty("scope")
-    val scope: String,
-    @JsonProperty("token_type")
-    val tokenType: String
-)

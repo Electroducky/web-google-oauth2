@@ -1,4 +1,4 @@
-package com.electroducky.webgoogleoauth2
+package com.electroducky.webgoogleoauth2.auth
 
 import java.io.Serializable
 import java.time.Instant
@@ -10,5 +10,6 @@ data class AuthSession(
 ) : Serializable {
     companion object {
         private const val serialVersionUID: Long = 1
+        const val authSessionAttribute = "authSession"
     }
 }
