@@ -7,7 +7,10 @@ import org.springframework.web.servlet.view.RedirectView
 import javax.servlet.http.HttpSession
 
 @Controller
-class AuthController(private val googleAuthService: GoogleAuthService) : AuthMapping {
+class AuthController(
+    private val googleAuthService: GoogleAuthService
+) : AuthMapping {
+
     override fun googleSignIn(session: HttpSession): RedirectView {
         return RedirectView(googleAuthService.beginAuthUrl(session.id))
     }
@@ -18,9 +21,7 @@ class AuthController(private val googleAuthService: GoogleAuthService) : AuthMap
     }
 
     override fun oauthcallback(session: HttpSession, error: String?, code: String?, state: String): RedirectView {
-        if (error != null) {
-            throw IllegalStateException(error)
-        }
+        check(error == null) { error!! }
 
         val authSession = googleAuthService.finishAuth(session.id, state, code!!)
         session.setAttribute(AuthSession.authSessionAttribute, authSession)

@@ -1,4 +1,4 @@
-package com.electroducky.webgoogleoauth2.person
+package com.electroducky.webgoogleoauth2.person.client
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
