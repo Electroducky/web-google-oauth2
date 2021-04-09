@@ -37,4 +37,6 @@ out/
 .vscode/
 
 ### Secrets ###
-/src/main/kotlin/com/electroducky/webgoogleoauth2/Secrets.kt
+secret/
+!**/src/main/**/secret/
+!**/src/test/**/secret/

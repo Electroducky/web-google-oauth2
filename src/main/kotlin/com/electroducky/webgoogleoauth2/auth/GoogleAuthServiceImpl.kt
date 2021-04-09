@@ -1,8 +1,9 @@
 package com.electroducky.webgoogleoauth2.auth
 
 import com.electroducky.webgoogleoauth2.auth.client.GoogleOauth2HttpClient
-import com.electroducky.webgoogleoauth2.clientId
+import com.electroducky.webgoogleoauth2.common.WebProperties
 import com.electroducky.webgoogleoauth2.common.logger
+import com.electroducky.webgoogleoauth2.secret.GoogleApiProperties
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponentsBuilder
 import java.time.Duration
@@ -10,20 +11,23 @@ import java.time.Instant
 
 @Service
 class GoogleAuthServiceImpl(
-    private val googleOauth2HttpClient: GoogleOauth2HttpClient
+    private val googleApiProperties: GoogleApiProperties,
+    private val googleOauth2HttpClient: GoogleOauth2HttpClient,
+    private val webProperties: WebProperties
 ) : GoogleAuthService {
     private val log = logger()
 
     override fun beginAuthUrl(sessionId: String): String {
         log.info("Begin OAuth2 flow for session $sessionId")
 
-        return UriComponentsBuilder.fromPath("https://accounts.google.com/o/oauth2/auth")
-            .queryParam("client_id", clientId)
-            .queryParam("redirect_uri", "http://localhost:8080/oauthcallback")
+        return UriComponentsBuilder.fromPath(googleApiProperties.web.authUri)
+            .queryParam("client_id", googleApiProperties.web.clientId)
+            .queryParam("redirect_uri", webProperties.oauthCallback)
             .queryParam("response_type", "code")
             .queryParam("access_type", "offline")
             .queryParam("scope", "https://www.googleapis.com/auth/userinfo.profile")
             .queryParam("state", sessionId)
+            .queryParam("prompt", "consent")
             .build()
             .encode()
             .toUriString()

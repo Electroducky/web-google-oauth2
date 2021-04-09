@@ -8,6 +8,7 @@ data class AuthSession(
     val expirationTimestamp: Instant,
     val refreshToken: String
 ) : Serializable {
+
     companion object {
         private const val serialVersionUID: Long = 1
         const val authSessionAttribute = "authSession"

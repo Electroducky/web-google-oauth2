@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "app.google.secret.path",
+      "type": "java.io.File",
+      "description": "Directory with secret file for Google API"
+    }
+  ]
+}

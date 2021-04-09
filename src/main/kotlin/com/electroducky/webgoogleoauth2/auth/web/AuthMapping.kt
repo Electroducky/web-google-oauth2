@@ -12,7 +12,7 @@ interface AuthMapping {
     @GetMapping("/signout")
     fun signout(session: HttpSession): RedirectView
 
-    @GetMapping("/oauthcallback")
+    @GetMapping("\${app.web.oauthcallbackPath}")
     fun oauthcallback(
         session: HttpSession,
         @RequestParam(required = false) error: String?,
