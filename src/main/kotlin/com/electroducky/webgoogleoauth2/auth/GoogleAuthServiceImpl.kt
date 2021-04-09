@@ -2,6 +2,7 @@ package com.electroducky.webgoogleoauth2.auth
 
 import com.electroducky.webgoogleoauth2.auth.client.GoogleOauth2HttpClient
 import com.electroducky.webgoogleoauth2.clientId
+import com.electroducky.webgoogleoauth2.common.logger
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponentsBuilder
 import java.time.Duration
@@ -11,8 +12,11 @@ import java.time.Instant
 class GoogleAuthServiceImpl(
     private val googleOauth2HttpClient: GoogleOauth2HttpClient
 ) : GoogleAuthService {
+    private val log = logger()
 
     override fun beginAuthUrl(sessionId: String): String {
+        log.info("Begin OAuth2 flow for session $sessionId")
+
         return UriComponentsBuilder.fromPath("https://accounts.google.com/o/oauth2/auth")
             .queryParam("client_id", clientId)
             .queryParam("redirect_uri", "http://localhost:8080/oauthcallback")
@@ -27,10 +31,13 @@ class GoogleAuthServiceImpl(
 
     override fun finishAuth(sessionId: String, state: String, code: String): AuthSession {
         if (sessionId != state) {
+            log.warn("State mismatch for OAuth2 flow actual state: $state, expected: $sessionId")
             throw IllegalStateException("Broken state please try again")
         }
 
         val tokenData = googleOauth2HttpClient.exchangeAccessCodeForTokens(code)
+        log.info("Finished OAuth2 flow for session $sessionId")
+
         return AuthSession(
             tokenData.accessToken,
             Instant.now().plusSeconds(tokenData.expiresIn.toLong()),
@@ -42,6 +49,7 @@ class GoogleAuthServiceImpl(
         if (Duration.between(Instant.now(), session.expirationTimestamp).seconds > 100)
             return session
 
+        log.info("Access token expires on ${session.expirationTimestamp}, refreshing")
         val refreshedToken = googleOauth2HttpClient.refreshAccessToken(session.refreshToken)
         return AuthSession(
             refreshedToken.accessToken,

@@ -2,6 +2,7 @@ package com.electroducky.webgoogleoauth2.webpage
 
 import com.electroducky.webgoogleoauth2.auth.AuthSession
 import com.electroducky.webgoogleoauth2.auth.GoogleAuthService
+import com.electroducky.webgoogleoauth2.common.logger
 import com.electroducky.webgoogleoauth2.person.PersonService
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -12,9 +13,10 @@ class WebpageController(
     private val googleAuthService: GoogleAuthService,
     private val personService: PersonService
 ) : WebpageMapping {
+    private val log = logger()
 
     init {
-        println("http://localhost:8080/home")
+        log.info("Open in browser: http://localhost:8080/home")
     }
 
     override fun home(session: HttpSession, model: Model): String {
