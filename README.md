@@ -4,6 +4,12 @@ Web app that supports authorization via Google Account.
 
 Naive implementation of OAuth 2.0 protocol client.
 
+## Resources
+
+[Using OAuth 2.0 to Access Google APIs](https://developers.google.com/identity/protocols/oauth2)
+
+[Using OAuth 2.0 for Web Server Applications](https://developers.google.com/identity/protocols/oauth2/web-server)
+
 ## Configuration
 
 To use Google API, service must be provided with a `client_secret` configuration file.
